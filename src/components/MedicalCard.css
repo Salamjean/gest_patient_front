@@ -1,0 +1,289 @@
+/* MedicalCard.css */
+@import url("https://fonts.googleapis.com/css2?family=Libre+Barcode+39+Text&display=swap");
+
+.medical-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  width: 100%;
+  overflow: hidden; /* Pas de scroll */
+  padding: 20px;
+}
+
+/* Wrapper for the card with 3D perspective */
+.mc-id-card-wrapper {
+  perspective: 1000px;
+  width: 600px;
+  height: 380px;
+  margin: 0 auto;
+  transform-origin: center center;
+  /* Responsive Scaling - Improved */
+  transform: scale(0.45); /* Very small mobile */
+  transition: transform 0.3s ease;
+}
+
+/* Small phones (iPhone SE, etc) */
+@media (min-width: 375px) {
+  .mc-id-card-wrapper {
+    transform: scale(0.55);
+  }
+}
+
+/* Standard phones */
+@media (min-width: 450px) {
+  .mc-id-card-wrapper {
+    transform: scale(0.7);
+  }
+}
+
+/* Large phones / Small tablets */
+@media (min-width: 640px) {
+  .mc-id-card-wrapper {
+    transform: scale(0.85);
+  }
+}
+
+/* Tablets */
+@media (min-width: 768px) {
+  .mc-id-card-wrapper {
+    transform: scale(0.95);
+  }
+}
+
+/* Desktop and above */
+@media (min-width: 1024px) {
+  .mc-id-card-wrapper {
+    transform: scale(1);
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1280px) {
+  .mc-id-card-wrapper {
+    transform: scale(1.1);
+  }
+}
+
+.mc-flip-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.mc-flip-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.mc-flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transform-style: preserve-3d;
+}
+
+/* Common Face Styles */
+.mc-id-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 1px solid #eee;
+  background-color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Front Face */
+.mc-id-card-front {
+  z-index: 2;
+}
+
+/* Back Face */
+.mc-id-card-back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+  justify-content: space-between;
+}
+
+/* --- Inner Component Styles --- */
+.mc-id-card-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px 0 30px;
+  align-items: flex-start;
+}
+
+.mc-header-logo-left {
+  width: 100px;
+}
+
+.mc-header-logo-right {
+  width: 100px;
+  text-align: right;
+}
+
+.mc-header-logo-center {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.mc-qrcode-container {
+  position: absolute;
+  top: 155px;
+  left: 40px;
+  padding: 5px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.mc-patient-info-box {
+  position: absolute;
+  top: 130px;
+  align-items: start;
+  left: 130px; 
+  padding: 10px 15px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3),
+    -1px -1px 2px rgba(255, 255, 255, 0.5);
+  width: 320px;
+  z-index: 2;
+  text-align: start;
+}
+
+.mc-info-row {
+  margin-bottom: 6px;
+  font-size: 15px;
+  line-height: 1.4;
+  display: flex;
+}
+
+.mc-info-label {
+  font-weight: normal;
+  color: #555;
+  width: 80px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.mc-info-value {
+  font-weight: bold;
+  color: #000;
+  font-size: 16px;
+}
+
+.mc-patient-photo-container {
+  position: absolute;
+  top: 130px;
+  right: 20px;
+  width: 115px;
+  height: 130px;
+  background: #eee;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mc-patient-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mc-main-title {
+  position: absolute;
+  bottom: 75px;
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: #000;
+  letter-spacing: 0.5px;
+}
+
+.mc-card-footer {
+  height: 60px;
+  background-color: #3596f7;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  margin-top: auto;
+}
+
+.mc-id-card-front .mc-card-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.mc-footer-logo {
+  width: 60px;
+  height: 40px;
+  background: #fff;
+  margin-right: 15px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-footer-text {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.mc-magnetic-strip {
+  width: 100%;
+  height: 50px;
+  background: #333;
+  margin-top: 30px;
+}
+
+.mc-back-content {
+  padding: 10px 40px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mc-legal-text {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.mc-codes-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mc-qr-box {
+  text-align: center;
+}
+
+.mc-code-label {
+  display: block;
+  font-size: 10px;
+  color: #999;
+  margin-top: 5px;
+}
