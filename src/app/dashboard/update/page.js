@@ -119,94 +119,86 @@ export default function UpdateProfilePage() {
   }, []);
 
   const fetchPatientData = async () => {
-    const token = localStorage.getItem("patient_token");
+  const token = localStorage.getItem("patient_token");
+  
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
 
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
+  try {
+    setLoading(true);
 
-    try {
-      setLoading(true);
-
-      // Vérifier localStorage d'abord
-      const storedData = localStorage.getItem("patient_data");
-      if (storedData) {
-        try {
-          const parsedData = JSON.parse(storedData);
-          console.log("📦 localStorage chargé:", parsedData);
-
-          // IMPORTANT: Vérifier la structure
-          if (parsedData.patient) {
-            // Les données sont dans "patient"
-            const mappedData = mapApiDataToForm(parsedData.patient);
-            setFormData(mappedData);
-            setOriginalData(mappedData);
-          } else {
-            // Les données sont peut-être directement à la racine
-            const mappedData = mapApiDataToForm(parsedData);
-            setFormData(mappedData);
-            setOriginalData(mappedData);
-          }
-        } catch (e) {
-          console.error("❌ Erreur parsing localStorage:", e);
+    // Vérifier localStorage d'abord
+    const storedData = localStorage.getItem("patient_data");
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        console.log("📦 localStorage chargé:", parsedData);
+        
+        // IMPORTANT: Vérifier la structure
+        if (parsedData.patient) {
+          // Les données sont dans "patient"
+          const mappedData = mapApiDataToForm(parsedData.patient);
+          setFormData(mappedData);
+          setOriginalData(mappedData);
+        } else {
+          // Les données sont peut-être directement à la racine
+          const mappedData = mapApiDataToForm(parsedData);
+          setFormData(mappedData);
+          setOriginalData(mappedData);
         }
+      } catch (e) {
+        console.error("❌ Erreur parsing localStorage:", e);
       }
-
-      // Récupérer depuis l'API
-      const response = await fetch(`${API_URL}/v1/patient/show`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des données");
-      }
-
-      const apiResponse = await response.json();
-      console.log("📡 Réponse API complète:", apiResponse);
-
-      // IMPORTANT: Les données sont dans apiResponse.patient
-      if (apiResponse.patient) {
-        console.log("👤 Données patient API:", apiResponse.patient);
-        console.log("👤 User data:", apiResponse.patient.user);
-        console.log(
-          "📍 Habitual residence:",
-          apiResponse.patient.habitualResidence
-        );
-        console.log(
-          "📍 Current residence:",
-          apiResponse.patient.currentResidence
-        );
-
-        const mappedApiData = mapApiDataToForm(apiResponse.patient);
-        setFormData(mappedApiData);
-        setOriginalData(mappedApiData);
-
-        // Mettre à jour localStorage avec la structure correcte
-        localStorage.setItem(
-          "patient_data",
-          JSON.stringify(apiResponse.patient)
-        );
-      } else {
-        console.error("❌ Aucune donnée patient dans la réponse API");
-        throw new Error("Structure de données invalide");
-      }
-    } catch (err) {
-      console.error("❌ Erreur détaillée:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Erreur",
-        text: "Impossible de charger vos informations",
-        confirmButtonColor: ERROR_RED,
-      });
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Récupérer depuis l'API
+    const response = await fetch(`${API_URL}/v1/patient/show`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des données");
+    }
+
+    const apiResponse = await response.json();
+    console.log("📡 Réponse API complète:", apiResponse);
+    
+    // IMPORTANT: Les données sont dans apiResponse.patient
+    if (apiResponse.patient) {
+      console.log("👤 Données patient API:", apiResponse.patient);
+      console.log("👤 User data:", apiResponse.patient.user);
+      console.log("📍 Habitual residence:", apiResponse.patient.habitualResidence);
+      console.log("📍 Current residence:", apiResponse.patient.currentResidence);
+      
+      const mappedApiData = mapApiDataToForm(apiResponse.patient);
+      setFormData(mappedApiData);
+      setOriginalData(mappedApiData);
+      
+      // Mettre à jour localStorage avec la structure correcte
+      localStorage.setItem("patient_data", JSON.stringify(apiResponse.patient));
+    } else {
+      console.error("❌ Aucune donnée patient dans la réponse API");
+      throw new Error("Structure de données invalide");
+    }
+    
+  } catch (err) {
+    console.error("❌ Erreur détaillée:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Erreur",
+      text: "Impossible de charger vos informations",
+      confirmButtonColor: ERROR_RED,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Fonction helper pour mapper les données
   const mapApiDataToForm = (data) => {
@@ -251,14 +243,10 @@ export default function UpdateProfilePage() {
       // Image
       image: null,
       previewImage: (() => {
-        const photoUrl =
-          data.img_url ||
-          data.photo ||
-          data.user?.img_url ||
-          data.user?.image_url;
+        const photoUrl = data.img_url || data.photo || data.user?.img_url || data.user?.image_url;
         if (photoUrl) {
           // Si c'est déjà une URL complète
-          if (photoUrl.startsWith("http")) {
+          if (photoUrl.startsWith('http')) {
             return photoUrl;
           }
           // Sinon, construire l'URL complète vers le backend
@@ -350,26 +338,26 @@ export default function UpdateProfilePage() {
     }
 
     // Validation téléphone
-    const phoneRegex = /^[0-9]{8}$/;
+    const phoneRegex = /^[0-9]{10}$/;
     if (formData.telephone && !phoneRegex.test(formData.telephone)) {
-      newErrors.telephone = "Numéro invalide (8 chiffres)";
+      newErrors.telephone = "Numéro invalide (10 chiffres)";
     }
     if (formData.contact2 && !phoneRegex.test(formData.contact2)) {
-      newErrors.contact2 = "Numéro invalide (8 chiffres)";
+      newErrors.contact2 = "Numéro invalide (10 chiffres)";
     }
     if (
       formData.telephone_personne_cas_urgence &&
       !phoneRegex.test(formData.telephone_personne_cas_urgence)
     ) {
       newErrors.telephone_personne_cas_urgence =
-        "Numéro invalide (8 chiffres)";
+        "Numéro invalide (10 chiffres)";
     }
     if (
       formData.telephone_personne2_cas_urgence &&
       !phoneRegex.test(formData.telephone_personne2_cas_urgence)
     ) {
       newErrors.telephone_personne2_cas_urgence =
-        "Numéro invalide (8 chiffres)";
+        "Numéro invalide (10 chiffres)";
     }
 
     // Validation date de naissance
@@ -417,18 +405,18 @@ export default function UpdateProfilePage() {
 
     // Mapper les champs du frontend vers les noms attendus par le backend
     const fieldMapping = {
-      telephone: "contact1",
-      contact2: "contact2",
-      residence_actuelle_id: "residence_actuelle",
-      residence_habituelle_id: "residence_habituelle",
-      address: "adresse",
-      nom_personne_cas_urgence: "nom_persn_sos",
-      telephone_personne_cas_urgence: "tel_persn_sos",
-      lien_personne_cas_urgence: "lien_persn_sos",
-      nom_personne2_cas_urgence: "nom_persn_sos2",
-      telephone_personne2_cas_urgence: "tel_persn_sos2",
-      lien_personne2_cas_urgence: "lien_persn_sos2",
-      image: "image",
+      telephone: 'contact1',
+      contact2: 'contact2',
+      residence_actuelle_id: 'residence_actuelle',
+      residence_habituelle_id: 'residence_habituelle',
+      address: 'adresse',
+      nom_personne_cas_urgence: 'nom_persn_sos',
+      telephone_personne_cas_urgence: 'tel_persn_sos',
+      lien_personne_cas_urgence: 'lien_persn_sos',
+      nom_personne2_cas_urgence: 'nom_persn_sos2',
+      telephone_personne2_cas_urgence: 'tel_persn_sos2',
+      lien_personne2_cas_urgence: 'lien_persn_sos2',
+      image: 'image',
     };
 
     // Ajouter les champs mappés au FormData
@@ -467,7 +455,7 @@ export default function UpdateProfilePage() {
       // Vérifier si la réponse est du JSON
       const contentType = response.headers.get("content-type");
       let data;
-
+      
       if (contentType && contentType.includes("application/json")) {
         data = await response.json();
         console.log("Réponse API:", data);
@@ -475,22 +463,20 @@ export default function UpdateProfilePage() {
         // Si ce n'est pas du JSON, c'est probablement une erreur HTML
         const textResponse = await response.text();
         console.error("Réponse HTML (erreur):", textResponse);
-        throw new Error(
-          "Le serveur a retourné une erreur. Vérifiez la console pour plus de détails."
-        );
+        throw new Error("Le serveur a retourné une erreur. Vérifiez la console pour plus de détails.");
       }
 
       if (response.ok) {
         console.log("✅ Mise à jour réussie, données retournées:", data);
-
+        
         // Récupérer les données actuelles du localStorage
         const currentPatientData = JSON.parse(
           localStorage.getItem("patient_data") || "{}"
         );
-
+        
         // L'API retourne les données mises à jour (vérifier data.patient ou data.data)
         const updatedFromApi = data.patient || data.data || {};
-
+        
         // Mettre à jour avec les nouvelles données
         const updatedData = {
           ...currentPatientData,
@@ -504,12 +490,12 @@ export default function UpdateProfilePage() {
             email: formData.email,
           },
         };
-
+        
         console.log("💾 Mise à jour du localStorage avec:", updatedData);
         localStorage.setItem("patient_data", JSON.stringify(updatedData));
-
+        
         // Déclencher un événement pour notifier les autres composants (header, etc.)
-        window.dispatchEvent(new Event("patientDataUpdated"));
+        window.dispatchEvent(new Event('patientDataUpdated'));
 
         // Mettre à jour le formData avec les nouvelles données
         const newFormData = mapApiDataToForm(updatedData);
