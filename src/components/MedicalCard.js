@@ -78,7 +78,7 @@ export default function MedicalCard({ patient }) {
   } - ${patient.hospital?.district_sanitaire || ""} - ${
     patient.hospital?.label || "Abidjan, Côte d'Ivoire"
   }`;
-  const qrText = `http://127.0.0.1:8000/patient/info/${patient.code_patient}`;
+  const qrText = `https://gestpatients-bf.com/patient/info/${patient.code_patient}`;
 
   return (
     <div className="flex flex-col items-center w-full">
