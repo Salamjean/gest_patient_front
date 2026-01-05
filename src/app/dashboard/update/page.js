@@ -338,26 +338,26 @@ export default function UpdateProfilePage() {
     }
 
     // Validation téléphone
-    const phoneRegex = /^[0-9]{10}$/;
+    const phoneRegex = /^[0-9]{8}$/;
     if (formData.telephone && !phoneRegex.test(formData.telephone)) {
-      newErrors.telephone = "Numéro invalide (10 chiffres)";
+      newErrors.telephone = "Numéro invalide (8 chiffres)";
     }
     if (formData.contact2 && !phoneRegex.test(formData.contact2)) {
-      newErrors.contact2 = "Numéro invalide (10 chiffres)";
+      newErrors.contact2 = "Numéro invalide (8 chiffres)";
     }
     if (
       formData.telephone_personne_cas_urgence &&
       !phoneRegex.test(formData.telephone_personne_cas_urgence)
     ) {
       newErrors.telephone_personne_cas_urgence =
-        "Numéro invalide (10 chiffres)";
+        "Numéro invalide (8 chiffres)";
     }
     if (
       formData.telephone_personne2_cas_urgence &&
       !phoneRegex.test(formData.telephone_personne2_cas_urgence)
     ) {
       newErrors.telephone_personne2_cas_urgence =
-        "Numéro invalide (10 chiffres)";
+        "Numéro invalide (8 chiffres)";
     }
 
     // Validation date de naissance
